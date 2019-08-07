@@ -8,7 +8,7 @@ public class PackageChecker : ScriptableObject
 {
     // The current version of the package checker
     // This will be updated each time the packages are checked so it only happens once each version
-    [HideInInspector] public int version = -1;
+    public int version = -1;
 
     // The toolbar entry in the editor. Change this to better reflect your asset or project
     const string k_MenuEntry = "Tools/PackageChecker/Check Packages";
@@ -153,14 +153,20 @@ public class PackageChecker : ScriptableObject
                     {
                         // Up to date. Move to next
                         if (!CheckNextPackage())
+                        {
                             EditorApplication.update -= WaitForSearch;
+                            OnComplete();
+                        }
                     }
                 }
                 else
                 {
                     // Version not specified. Move to next
                     if (!CheckNextPackage())
+                    {
                         EditorApplication.update -= WaitForSearch;
+                        OnComplete();
+                    }
                 }
             }
             else
@@ -173,7 +179,10 @@ public class PackageChecker : ScriptableObject
         {
             Debug.Log("Checking for invalid package. Please check the name is correct: " + k_Packages[m_PackageIndex]);
             if (!CheckNextPackage())
+            {
                 EditorApplication.update -= WaitForSearch;
+                OnComplete();
+            }
         }
     }
 
@@ -186,5 +195,12 @@ public class PackageChecker : ScriptableObject
 
         if (CheckNextPackage())
             EditorApplication.update += WaitForSearch;
+        else
+            OnComplete();
+    }
+
+    void OnComplete ()
+    {
+        // Add any code to run after completion here
     }
 }
